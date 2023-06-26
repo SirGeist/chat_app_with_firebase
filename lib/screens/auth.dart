@@ -8,7 +8,27 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
+  
+  // Possibily connected to validator argument
+  final _formKey = GlobalKey<FormState>();  
+
   var _isLogin = true;
+
+  var _enteredEmail = '';
+  var _enteredPassword = '';
+
+  void _submit(){
+    final isValid = _formKey.currentState!.validate();
+
+
+    if(isValid){
+      _formKey.currentState!.save();
+
+      // Displaying the user entered info
+      print(_enteredEmail);
+      print(_enteredPassword);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,12 +49,15 @@ class _AuthScreenState extends State<AuthScreen> {
                 width: 200,
                 child: Image.asset('assets/images/chat.png'),
               ),
+
+              // Login/Signup widget for inserting user info
               Card(
                 margin: const EdgeInsets.all(20),
                 child: SingleChildScrollView(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Form(
+                      key: _formKey,
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -46,6 +69,20 @@ class _AuthScreenState extends State<AuthScreen> {
                             keyboardType: TextInputType.emailAddress,
                             autocorrect: false,
                             textCapitalization: TextCapitalization.none,
+
+                            // Text validation
+                            // Making sure value has no white space, null, or empty
+                            validator: (value){
+                              if(value == null || value.trim().isEmpty || !value.contains('@')){
+                                return 'Please enter a valid email address.';
+                              }
+
+                              return null;
+                            },
+
+                            onSaved: (value){
+                              _enteredEmail = value!;
+                            },
                           ),
 
                           // Password text form field
@@ -56,17 +93,34 @@ class _AuthScreenState extends State<AuthScreen> {
                             autocorrect: false,
                             textCapitalization: TextCapitalization.none,
                             obscureText: true,
+
+
+                            // Minimum requirements for password
+                            validator: (value){
+                              if(value == null || value.trim().length < 6){
+                                return 'Password must be at least 6 characters long.';
+                              }
+                              return null;
+                            },
+
+                            onSaved: (value){
+                              _enteredPassword = value!;
+                            }
+                            
                           ),
 
                           const SizedBox(height: 12),
 
                           ElevatedButton(
-                            onPressed: () {},
+                            onPressed: _submit,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Theme.of(context)
                                   .colorScheme
                                   .primaryContainer,
                             ),
+
+                            // If the button to create an account is pressed
+                            // The text will change to signup
                             child: Text(_isLogin ? 'Login' : 'Signup'),
                           ),
                           TextButton(
@@ -75,6 +129,9 @@ class _AuthScreenState extends State<AuthScreen> {
                                 _isLogin = !_isLogin;
                               });
                             },
+
+                            // Pressing the button to change from login to signup
+                            // and vice versa
                             child: Text(_isLogin
                                 ? 'Create an account'
                                 : 'I already have an account. Login'),
