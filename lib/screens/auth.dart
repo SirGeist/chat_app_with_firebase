@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+final _firebase = FirebaseAuth.instance;
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -8,25 +11,42 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  
   // Possibily connected to validator argument
-  final _formKey = GlobalKey<FormState>();  
+  final _formKey = GlobalKey<FormState>();
 
   var _isLogin = true;
 
   var _enteredEmail = '';
   var _enteredPassword = '';
 
-  void _submit(){
+  void _submit() async {
     final isValid = _formKey.currentState!.validate();
 
+    if (!isValid) {
+      return;
+    }
+    _formKey.currentState!.save();
 
-    if(isValid){
-      _formKey.currentState!.save();
+    if (_isLogin) {
+      // log users
+    } else {
+      try {
+        final userCredientials = _firebase.createUserWithEmailandPassword(
+          email: _enteredEmail,
+          password: _enteredPassword,
+        );
+      } on FirebaseAuthException catch (error) {
+        if (error.code == 'email-already-in-use') {
+          // ...
+        }
 
-      // Displaying the user entered info
-      print(_enteredEmail);
-      print(_enteredPassword);
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error.message ?? 'Authentication failed.'),
+          ),
+        );
+      }
     }
   }
 
@@ -72,42 +92,40 @@ class _AuthScreenState extends State<AuthScreen> {
 
                             // Text validation
                             // Making sure value has no white space, null, or empty
-                            validator: (value){
-                              if(value == null || value.trim().isEmpty || !value.contains('@')){
+                            validator: (value) {
+                              if (value == null ||
+                                  value.trim().isEmpty ||
+                                  !value.contains('@')) {
                                 return 'Please enter a valid email address.';
                               }
 
                               return null;
                             },
 
-                            onSaved: (value){
+                            onSaved: (value) {
                               _enteredEmail = value!;
                             },
                           ),
 
                           // Password text form field
                           TextFormField(
-                            decoration: const InputDecoration(
-                              labelText: 'Password',
-                            ),
-                            autocorrect: false,
-                            textCapitalization: TextCapitalization.none,
-                            obscureText: true,
+                              decoration: const InputDecoration(
+                                labelText: 'Password',
+                              ),
+                              autocorrect: false,
+                              textCapitalization: TextCapitalization.none,
+                              obscureText: true,
 
-
-                            // Minimum requirements for password
-                            validator: (value){
-                              if(value == null || value.trim().length < 6){
-                                return 'Password must be at least 6 characters long.';
-                              }
-                              return null;
-                            },
-
-                            onSaved: (value){
-                              _enteredPassword = value!;
-                            }
-                            
-                          ),
+                              // Minimum requirements for password
+                              validator: (value) {
+                                if (value == null || value.trim().length < 6) {
+                                  return 'Password must be at least 6 characters long.';
+                                }
+                                return null;
+                              },
+                              onSaved: (value) {
+                                _enteredPassword = value!;
+                              }),
 
                           const SizedBox(height: 12),
 
