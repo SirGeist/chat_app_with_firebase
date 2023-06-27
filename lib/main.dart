@@ -4,6 +4,8 @@ import 'package:chat_app_with_firebase/screens/auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:chat_app_with_firebase/screens/chat.dart';
+import 'package:chat_app_with_firebase/screens/splash.dart';
+
 
 void main() async{
 
@@ -28,6 +30,13 @@ class App extends StatelessWidget {
       ),
       // Capable of producing multiple values over time
       home: StreamBuilder(stream: FirebaseAuth.instance.authStateChanges(), builder: (ctx,snapshot){
+        
+        // Showing splash screen until firebase is done figuring out if user is
+        // logged in or not; prevent authscreen from showing initially
+        if(snapshot.connectionState == ConnectionState.waiting){
+          return const SplashScreen();
+        }
+        
         if(snapshot.hasData){
           return const ChatScreen();
         }
