@@ -3,6 +3,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 final _firebase = FirebaseAuth.instance;
 
@@ -21,7 +22,7 @@ class _AuthScreenState extends State<AuthScreen> {
   var _enteredEmail = '';
   var _enteredPassword = '';
   var _isAuthenticating = false;
-
+  var _enteredUsername = '';
   File? _selectedImage;
 
   void _submit() async {
@@ -63,6 +64,15 @@ class _AuthScreenState extends State<AuthScreen> {
         // Gives us a url to display later in firebase
         final imageUrl = await storageRef.getDownloadURL();
 
+        // Used to talk to the instance on the firestore website
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredientials.user!.uid)
+            .set({
+          'username': 'to be done...',
+          'email': _enteredEmail,
+          'image_url': imageUrl,
+        });
         // Temporary
         // Plan to show image later, but for now making sure it works
         print(imageUrl);
@@ -151,7 +161,24 @@ class _AuthScreenState extends State<AuthScreen> {
                               _enteredEmail = value!;
                             },
                           ),
-
+                          
+                          // Adding a username field for signing up
+                          TextFormField(
+                            decoration: const InputDecoration(labelText: 'Username'),
+                            // Suggestions do not matter when creating a username
+                            enableSuggestions: false,
+                            validator: (value) {
+                              if (value == null ||
+                                  value.isEmpty ||
+                                  value.trim().length < 4) {
+                                return 'Please enter at least 4 characters';
+                              }
+                              return null;
+                            },
+                            onSaved: (value){
+                              _enteredUsername = value!;
+                            },
+                          ),
                           // Password text form field
                           TextFormField(
                               decoration: const InputDecoration(
@@ -173,7 +200,6 @@ class _AuthScreenState extends State<AuthScreen> {
                               }),
 
                           const SizedBox(height: 12),
-
 
                           // If it is authenticating the info, display a spinning circle
                           if (_isAuthenticating)

@@ -31,10 +31,10 @@
               "client_type": 3
             },
             {
-              "client_id": "308831815933-plda4a2v90em3dj5ksljdba24o6mgrp4.apps.googleusercontent.com",
+              "client_id": "308831815933-pg3lsds42ph2m4874pssdkvkinsurg27.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.chatAppWithFirebase.RunnerTests"
+                "bundle_id": "com.peter.chatAppWithFirebase"
               }
             }
           ]
