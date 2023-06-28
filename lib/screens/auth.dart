@@ -1,6 +1,7 @@
 import 'package:chat_app_with_firebase/widgets/user_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:io';
 
 final _firebase = FirebaseAuth.instance;
 
@@ -16,44 +17,44 @@ class _AuthScreenState extends State<AuthScreen> {
   final _formKey = GlobalKey<FormState>();
 
   var _isLogin = true;
-
   var _enteredEmail = '';
   var _enteredPassword = '';
+
+  File? _selectedImage;
 
   void _submit() async {
     final isValid = _formKey.currentState!.validate();
 
-    if (!isValid) {
+    // Invalid inputs means we immediately return
+    if(!isValid ||!_isLogin && _selectedImage == null){
       return;
     }
     _formKey.currentState!.save();
 
-    try{
+    try {
       if (_isLogin) {
-      final userCredientials = await _firebase.signInWithEmailAndPassword(
-        email: _enteredEmail,
-        password: _enteredPassword,
-      );
-      
-    }else{
+        final userCredientials = await _firebase.signInWithEmailAndPassword(
+          email: _enteredEmail,
+          password: _enteredPassword,
+        );
+      } else {
         final userCredientials = await _firebase.createUserWithEmailAndPassword(
           email: _enteredEmail,
           password: _enteredPassword,
         );
-        
       }
-    }on FirebaseAuthException catch (error) {
-        if (error.code == 'email-already-in-use') {
-          // ...
-        }
+    } on FirebaseAuthException catch (error) {
+      if (error.code == 'email-already-in-use') {
+        // ...
+      }
 
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(error.message ?? 'Authentication failed.'),
-          ),
-        );
-      }
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.message ?? 'Authentication failed.'),
+        ),
+      );
+    }
   }
 
   @override
@@ -89,8 +90,12 @@ class _AuthScreenState extends State<AuthScreen> {
                         children: [
                           // If you are logged in, a userimagepicker will be displayed
                           // otherwise, nothing will show
-                          if(!_isLogin)
-                            UserImagePicker(),
+                          if (!_isLogin)
+                            UserImagePicker(
+                              onPickImage: (pickedImage) {
+                                _selectedImage = pickedImage;
+                              },
+                            ),
                           // Email address text form field
                           TextFormField(
                             decoration: const InputDecoration(
