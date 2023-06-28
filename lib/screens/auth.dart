@@ -1,4 +1,5 @@
 import 'package:chat_app_with_firebase/widgets/user_image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io';
@@ -26,7 +27,7 @@ class _AuthScreenState extends State<AuthScreen> {
     final isValid = _formKey.currentState!.validate();
 
     // Invalid inputs means we immediately return
-    if(!isValid ||!_isLogin && _selectedImage == null){
+    if (!isValid || (!_isLogin && _selectedImage == null)) {
       return;
     }
     _formKey.currentState!.save();
@@ -42,6 +43,25 @@ class _AuthScreenState extends State<AuthScreen> {
           email: _enteredEmail,
           password: _enteredPassword,
         );
+
+        // Uploading new image to firebase
+        // .child('user_images') is a folder that firebase dives in
+        // The jpg gets the uid that was created by firebase that we receive from the input
+        // We are basically creating a new jpg that carries the uid of who the images belongs
+        // final storageRef = FirebaseStorage.instance
+        //     .ref()
+        //     .child('user_images')
+        //     .child('${userCredientials.user!.uid}.jpg');
+
+        // // Returns an upload task
+        // await storageRef.putFile(_selectedImage!);
+
+        // // Gives us a url to display later in firebase
+        // final imageUrl = await storageRef.getDownloadURL();
+
+        // // Temporary
+        // // Plan to show image later, but for now making sure it works
+        // print(imageUrl);
       }
     } on FirebaseAuthException catch (error) {
       if (error.code == 'email-already-in-use') {
@@ -92,9 +112,9 @@ class _AuthScreenState extends State<AuthScreen> {
                           // otherwise, nothing will show
                           if (!_isLogin)
                             UserImagePicker(
-                              onPickImage: (pickedImage) {
-                                _selectedImage = pickedImage;
-                              },
+                              // onPickImage: (pickedImage) {
+                              //   _selectedImage = pickedImage;
+                              // },
                             ),
                           // Email address text form field
                           TextFormField(
