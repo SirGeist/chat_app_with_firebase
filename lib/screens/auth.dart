@@ -1,3 +1,4 @@
+import 'package:chat_app_with_firebase/widgets/user_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -86,6 +87,10 @@ class _AuthScreenState extends State<AuthScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          // If you are logged in, a userimagepicker will be displayed
+                          // otherwise, nothing will show
+                          if(!_isLogin)
+                            UserImagePicker(),
                           // Email address text form field
                           TextFormField(
                             decoration: const InputDecoration(
