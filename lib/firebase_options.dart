@@ -59,11 +59,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCn-Yycgc5GX5B93rLFDmkCMgbj_43-twQ',
-    appId: '1:308831815933:ios:b3e574918d469aac4fd694',
+    appId: '1:308831815933:ios:be97b69827da8fab4fd694',
     messagingSenderId: '308831815933',
     projectId: 'flutter-chat-app-de8db',
     storageBucket: 'flutter-chat-app-de8db.appspot.com',
-    iosClientId: '308831815933-u0h3sijf6i87uijmj9eqd4ti4gdoslqh.apps.googleusercontent.com',
-    iosBundleId: 'com.example.chatAppWithFirebase',
+    iosClientId: '308831815933-pg3lsds42ph2m4874pssdkvkinsurg27.apps.googleusercontent.com',
+    iosBundleId: 'com.peter.chatAppWithFirebase',
   );
 }
