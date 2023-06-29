@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class NewMessage extends StatefulWidget {
@@ -8,31 +10,60 @@ class NewMessage extends StatefulWidget {
 }
 
 class _NewMessageState extends State<NewMessage> {
-  
   final _messageController = TextEditingController();
 
   @override
   void dispose() {
     // Always dispose controllers to make sure that the memory that is being used
     // by the controllers get used up
-    
+
     _messageController.dispose();
     super.dispose();
   }
 
   // Reading the entered value after the button for the message is pressed
-  void _submitMessage(){
+  void _submitMessage() async {
     final enteredMessage = _messageController.text;
 
     // Validation
-    if(enteredMessage.trim().isEmpty){
+    if (enteredMessage.trim().isEmpty) {
       return;
     }
 
-    // send to firebase
+    // Closing the keyboard immediately
+    FocusScope.of(context).unfocus();
 
     // Making sure that text field becomes empty after a message has been submitted
     _messageController.clear();
+    // Should not be null because unauthenticated users can't
+    // reach this part
+    final user = FirebaseAuth.instance.currentUser!;
+
+    // Contains username and image from firebase
+    final userData = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
+
+    // Sending to firebase
+    // Automatically generated uid created by firebase
+    FirebaseFirestore.instance.collection('chat').add({
+      'text': enteredMessage,
+      'createdAt': Timestamp.now(),
+      'userId': user.uid,
+
+      // Variables were retrieved from firestore
+      // Remember that userData information was created in auth.dart
+      // that's how we get username and image_url
+      'username': userData.data()!['username'],
+      'userImage': userData.data()!['image_url'],
+    });
+
+
+    
+
+
+    
   }
 
   @override
@@ -45,7 +76,7 @@ class _NewMessageState extends State<NewMessage> {
       ),
       child: Row(
         children: [
-           Expanded(
+          Expanded(
             child: TextField(
               controller: _messageController,
               textCapitalization: TextCapitalization.sentences,
