@@ -69,7 +69,7 @@ class _AuthScreenState extends State<AuthScreen> {
             .collection('users')
             .doc(userCredientials.user!.uid)
             .set({
-          'username': 'to be done...',
+          'username': _enteredUsername,
           'email': _enteredEmail,
           'image_url': imageUrl,
         });
@@ -161,24 +161,28 @@ class _AuthScreenState extends State<AuthScreen> {
                               _enteredEmail = value!;
                             },
                           ),
-                          
-                          // Adding a username field for signing up
-                          TextFormField(
-                            decoration: const InputDecoration(labelText: 'Username'),
-                            // Suggestions do not matter when creating a username
-                            enableSuggestions: false,
-                            validator: (value) {
-                              if (value == null ||
-                                  value.isEmpty ||
-                                  value.trim().length < 4) {
-                                return 'Please enter at least 4 characters';
-                              }
-                              return null;
-                            },
-                            onSaved: (value){
-                              _enteredUsername = value!;
-                            },
-                          ),
+
+                          // If we are logging in, the below shouldn't be showing
+                          // up
+                          if (!_isLogin)
+                            // Adding a username field for signing up
+                            TextFormField(
+                              decoration:
+                                  const InputDecoration(labelText: 'Username'),
+                              // Suggestions do not matter when creating a username
+                              enableSuggestions: false,
+                              validator: (value) {
+                                if (value == null ||
+                                    value.isEmpty ||
+                                    value.trim().length < 4) {
+                                  return 'Please enter at least 4 characters';
+                                }
+                                return null;
+                              },
+                              onSaved: (value) {
+                                _enteredUsername = value!;
+                              },
+                            ),
                           // Password text form field
                           TextFormField(
                               decoration: const InputDecoration(
