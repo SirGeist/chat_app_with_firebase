@@ -1,3 +1,5 @@
 {
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.errorSquiggles": "disabled",
+    "cmake.sourceDirectory": "/home/peterhuynh/projects/flutter_projects/chat_app_with_firebase/linux/flutter",
+    "cmake.configureOnOpen": false
 }
